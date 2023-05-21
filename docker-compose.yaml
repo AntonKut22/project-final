@@ -1,0 +1,34 @@
+version: '3.9'
+services:
+  app:
+    container_name: "jira_service"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jira-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - nginx
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jira
+      SPRING_DATASOURCE_USERNAME: jira
+      SPRING_DATASOURCE_PASSWORD: JiraRush
+      SPRING_PROFILES_ACTIVE: prod
+  postgres:
+    container_name: pg_db_jira
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: jira
+      POSTGRES_PASSWORD: JiraRush
+      POSTGRES_DB: jira
+    ports:
+      - "5432:5432"
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    ports:
+      - "80:80"
